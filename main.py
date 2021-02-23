@@ -43,6 +43,28 @@ def format_price_contents(year):
     df["date"] = new_date_list
     return df
 
+def format_networth(file):
+    needed_col = ["date", "net_mean_worth", "net_median_worth"]
+    for e in file.columns.to_list():
+        if e not in needed_col:
+            file = file.drop(e, axis=1)
+    new_date_list = []
+    for e in file["date"].to_list():
+        date = datetime(int(e), 1, 1)
+        new_date_list.append(date)
+    file["date"] = new_date_list
+    return file
+
+def format_median_networth():
+    df = pd.read_csv("data/median_networth.csv")
+    df = format_networth(df)
+    return df
+
+def format_mean_networth():
+    df = pd.read_csv("data/mean_networth.csv")
+    df = format_networth(df)
+    return df
+
 def format_discount_rate():
     discount_df = pd.read_csv("data/dicount_rate.csv")
     discount_df.columns = ["date", "discount_date"]
@@ -210,5 +232,5 @@ print(full_frame.to_string())
 income_df = format_income()
 print(income_df)"""
 
-df = format_avg_income()
+df = format_median_networth()
 print(df.to_string())
