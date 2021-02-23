@@ -3,3 +3,6 @@ The project is part of my finals project for my HXX(The Higher Commercial Examin
 
 The input data is based on a series of macroeconomic indicators. 
 The data is split between CSV files ande webscrabed links.
+
+To install run, setup af conda env and run "pip install req.txt".
+After that run the main.py
