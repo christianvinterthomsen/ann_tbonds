@@ -21,10 +21,14 @@ def parse_html(url):
     p.feed(xhtml)
     return p
 
-def format_price_contents(year):
-    url = "https://www.treasury.gov/resource-center/data-chart-center/interest-rates/Pages/TextView.aspx?data=yieldYear&year=" + year
+def create_table(url, index):
     p = parse_html(url)
     df = pd.DataFrame(p.tables[0])
+    return df
+
+def format_price_contents(year):
+    url = "https://www.treasury.gov/resource-center/data-chart-center/interest-rates/Pages/TextView.aspx?data=yieldYear&year=" + year
+    df = create_table(url, 0)
     col_names = df[0:1].values.tolist()[0]
     df = df.drop(0, axis=0)
     col_names.pop(0)
@@ -52,7 +56,7 @@ def format_discount_rate():
     discount_df["date"] = new_date_list
     return discount_df
 
-def format_income():
+def format_median_income():
     income_df = pd.read_csv("data/income.csv")
     income_df.columns = ["date", "median_income"]
     income_df.to_csv("data/income.csv", index=False)
@@ -64,6 +68,19 @@ def format_income():
         new_date_list.append(date)
     income_df["date"] = new_date_list
     return income_df
+
+def format_avg_income():
+    url = "https://dqydj.com/household-income-by-year/"
+    df = create_table(url, 0)
+    df = df.drop(0, axis=0)
+    df.columns = ["date", "avg. income", "inflation adj.(2020)"]
+    dates = df["date"].to_list()
+    new_date_list = []
+    for e in dates:
+        date = datetime(int(e), 1, 1)
+        new_date_list.append(date)
+    df["date"] = new_date_list
+    return df
 
 def format_reservereq_contents():
     p = parse_html("https://www.federalreserve.gov/monetarypolicy/reservereq.htm")
@@ -161,7 +178,7 @@ def train_model(frame, test_split, test_col):
 
 
 
-years = ["2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008",
+"""years = ["2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008",
          "2009", "2010", "2011","2012","2013","2014","2015","2016","2017","2018",
          "2019","2020"]
 #years = ["2020"]
@@ -178,7 +195,7 @@ for c in full_frame.columns:
     full_frame[c] = pd.to_numeric(price_df[c], errors='coerce')
 full_frame = full_frame.fillna(0)
 
-model = train_model(full_frame, 0.1, "30 yr")
+model = train_model(full_frame, 0.1, "30 yr")"""
 """
 discount_df = format_discount_rate()
 print(discount_df.to_string())
@@ -193,4 +210,5 @@ print(full_frame.to_string())
 income_df = format_income()
 print(income_df)"""
 
-
+df = format_avg_income()
+print(df.to_string())
