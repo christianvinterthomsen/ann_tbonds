@@ -9,7 +9,8 @@ from keras.models import Sequential
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 
-month_dict = {"January": 1, "December": 12}
+month_dict = {"January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6, "July": 7, "August": 8,
+              "September": 9, "October": 10, "November": 11, "December": 12}
 def url_get_contents(url):
     req = urllib.request.Request(url=url)
     f = urllib.request.urlopen(req)
@@ -30,9 +31,18 @@ def create_table(url, index):
 class data_formatter():
     def __init__(self):
         self.format = self._format()
+
     class _format():
         def __init__(self):
             self.selected_features = []
+
+        def _format_hyphen_datetimes(self, date_list):
+            new_date_list = []
+            for e in date_list:
+                dates = e.split("-")
+                date = datetime(int(dates[0]), int(dates[1]), int(dates[2]))
+                new_date_list.append(date)
+            return new_date_list
 
         def _single_yield(self, year):
             url = "https://www.treasury.gov/resource-center/data-chart-center/interest-rates/Pages/TextView.aspx?data=yieldYear&year=" + year
@@ -89,11 +99,7 @@ class data_formatter():
             df.columns = ["date", "discount_date"]
             df.to_csv("data/discount_rate.csv", index=False)
             date_list = df["date"].to_list()
-            new_date_list = []
-            for e in date_list:
-                dates = e.split("-")
-                date = datetime(int(dates[0]), int(dates[1]), int(dates[2]))
-                new_date_list.append(date)
+            new_date_list = self._format_hyphen_datetimes(date_list)
             df["date"] = new_date_list
             df = df.reset_index(drop=True)
             self.selected_features.append(df)
@@ -103,11 +109,7 @@ class data_formatter():
             df.columns = ["date", "median_income"]
             df.to_csv("data/income.csv", index=False)
             date_list = df["date"].to_list()
-            new_date_list = []
-            for e in date_list:
-                dates = e.split("-")
-                date = datetime(int(dates[0]), int(dates[1]), int(dates[2]))
-                new_date_list.append(date)
+            new_date_list = self._format_hyphen_datetimes(date_list)
             df["date"] = new_date_list
             df = df.reset_index(drop=True)
             self.selected_features.append(df)
@@ -142,10 +144,110 @@ class data_formatter():
             df = df.reset_index(drop=True)
             self.selected_features.append(df)
 
+        def CPI(self):
+            df = pd.read_csv("data/CPI.csv")
+            df.columns = ["date", "CPI"]
+            date_list = df["date"].to_list()
+            new_date_list = self._format_hyphen_datetimes(date_list)
+            df["date"] = new_date_list
+            df = df.reset_index(drop=True)
+            self.selected_features.append(df)
+
+        def inflation(self):
+            df = pd.read_csv("data/inflation.csv")
+            df.columns = ["date", "inflation"]
+            date_list = df["date"].to_list()
+            new_date_list = self._format_hyphen_datetimes(date_list)
+            df["date"] = new_date_list
+            df = df.reset_index(drop=True)
+            self.selected_features.append(df)
+
+        def eff_fed_funds_rate(self):
+            df = pd.read_csv("data/eff_federal_funds_rate.csv")
+            df.columns = ["date", "eff_fed_funds_rate"]
+            date_list = df["date"].to_list()
+            new_date_list = self._format_hyphen_datetimes(date_list)
+            df["date"] = new_date_list
+            df = df.reset_index(drop=True)
+            self.selected_features.append(df)
+
+        def CSI(self):
+            df = pd.read_csv("data/CSI.csv")
+            df.columns = ["month", "year", "CSI"]
+            month_list = df["month"].to_list()
+            year_list = df["year"].to_list()
+            new_date_list = []
+            for e in range(len(year_list)):
+                date = datetime(int(year_list[e]), int(month_dict[month_list[e]]), 1)
+                new_date_list.append(date)
+            df["date"] = new_date_list
+            df = df.reset_index(drop=True)
+            df = df.drop("month", axis=1)
+            df = df.drop("year", axis=1)
+            self.selected_features.append(df)
+
+        def outstanding_con_credit(self):
+            df = pd.read_csv("data/outstanding_credit.csv")
+            df.columns = ["date", "outstanding_consumer_credit"]
+            date_list = df["date"].to_list()
+            new_date_list = self._format_hyphen_datetimes(date_list)
+            df["date"] = new_date_list
+            df = df.reset_index(drop=True)
+            self.selected_features.append(df)
+
+        def financial_literacy(self):
+            df = pd.read_csv("data/financial_literacy.csv")
+            df.columns = ["date", "fin_lit_18-34", "fin_lit_35-54", "fin_lit_55+"]
+            date_list = df["date"].to_list()
+            new_date_list = []
+            for e in date_list:
+                date = datetime(int(e), 1, 1)
+                new_date_list.append(date)
+            df["date"] = new_date_list
+            df["date"] = new_date_list
+            df = df.reset_index(drop=True)
+            self.selected_features.append(df)
+
+        def age_distribution(self):
+            df = pd.read_csv("data/age_distribution.csv")
+            df.columns = ["date", "0-14", "15-64", "65+"]
+            date_list = df["date"].to_list()
+            new_date_list = []
+            for e in date_list:
+                date = datetime(int(e), 1, 1)
+                new_date_list.append(date)
+            df["date"] = new_date_list
+            df["date"] = new_date_list
+            df = df.reset_index(drop=True)
+            self.selected_features.append(df)
+
+        def sp500(self):
+            df = pd.read_csv("data/sp500.csv")
+            date_list = df["date"].to_list()
+            new_date_list = self._format_hyphen_datetimes(date_list)
+            df["date"] = new_date_list
+            df = df.reset_index(drop=True)
+            for e in df.columns.to_list():
+                if e != "Close" and e != "date":
+                    df = df.drop(e, axis=1)
+            df.columns = ["date", "sp500"]
+            self.selected_features.append(df)
+
+        def VSTMX(self):
+            df = pd.read_csv("data/VTSMX.csv")
+            date_list = df["date"].to_list()
+            new_date_list = self._format_hyphen_datetimes(date_list)
+            df["date"] = new_date_list
+            df = df.reset_index(drop=True)
+            for e in df.columns.to_list():
+                if e != "Close" and e != "date":
+                    df = df.drop(e, axis=1)
+            df.columns = ["date", "VSTMX"]
+            self.selected_features.append(df)
+
     def compile(self):
         org_frame = self.format.bond_yield
         for comp_frame in self.format.selected_features:
-            print(comp_frame.to_string())
             list_dict = {}
             for i in comp_frame.columns.to_list():
                 list_dict[i] = []
@@ -251,12 +353,10 @@ income_df = format_income()
 print(income_df)"""
 
 year = ["2018", "2019", "2020"]
-
+year = ["2018"]
 data = data_formatter()
 data.format.bond_yield(year)
-data.format.avg_income()
-data.format.median_networth()
+data.format.VSTMX()
 df = data.compile()
 print(df.to_string())
-
 
