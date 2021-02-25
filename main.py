@@ -245,6 +245,46 @@ class data_formatter():
             df.columns = ["date", "VSTMX"]
             self.selected_features.append(df)
 
+        def goverment_rev(self):
+            df = pd.read_csv("data/government_rev.csv")
+            df.columns = ["date", "government_rev"]
+            date_list = df["date"].to_list()
+            new_date_list = self._format_hyphen_datetimes(date_list)
+            df["date"] = new_date_list
+            df = df.reset_index(drop=True)
+            self.selected_features.append(df)
+
+        def goverment_expend(self):
+            df = pd.read_csv("data/government_expend.csv")
+            df.columns = ["date", "government_expend"]
+            date_list = df["date"].to_list()
+            new_date_list = self._format_hyphen_datetimes(date_list)
+            df["date"] = new_date_list
+            df = df.reset_index(drop=True)
+            self.selected_features.append(df)
+
+        def fed_bond_holdings(self):
+            df = pd.read_csv("data/fed_bond_holdings.csv")
+            df.columns = ["date", "fed_bond_holdings"]
+            date_list = df["date"].to_list()
+            new_date_list = self._format_hyphen_datetimes(date_list)
+            df["date"] = new_date_list
+            df = df.reset_index(drop=True)
+            self.selected_features.append(df)
+
+        def GDP_growth(self):
+            df = pd.read_csv("data/GDP.csv")
+            df = df[df["Country Name"] == "United States"]
+            df = df.iloc[:, 5:len(df.columns) - 2]
+            years = df.columns.to_list()
+            values = df[0:1].values.tolist()
+            new_date_list = []
+            for e in years:
+                date = datetime(int(e), 1, 1)
+                new_date_list.append(date)
+            df = pd.DataFrame({"date": new_date_list, "GDP_growth": values[0]})
+            self.selected_features.append(df)
+
     def compile(self):
         org_frame = self.format.bond_yield
         for comp_frame in self.format.selected_features:
@@ -356,7 +396,9 @@ year = ["2018", "2019", "2020"]
 year = ["2018"]
 data = data_formatter()
 data.format.bond_yield(year)
-data.format.VSTMX()
+data.format.GDP_growth()
 df = data.compile()
 print(df.to_string())
+
+
 
