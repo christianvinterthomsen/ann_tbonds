@@ -1,0 +1,5 @@
+pandas
+html-table-parser3
+urllib3
+tensorflow
+matplotlib
