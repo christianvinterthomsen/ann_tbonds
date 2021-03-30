@@ -597,29 +597,3 @@ def create_new_frame(year):
     return df
 
 
-"""years = ["2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008",
-         "2009", "2010", "2011","2012","2013","2014","2015","2016","2017","2018",
-         "2019","2020"]
-df = create_new_frame(years)"""
-
-
-
-
-
-"""df = pd.read_csv("compiled_frame")
-print(df.head().to_string())
-df = df.fillna(0)
-train_model(df, 0.1, "10 yr")"""
-
-df = pd.read_csv("compiled_frame")
-df = df.fillna(0)
-model = load_model("model_10YR_best")
-
-analyzer_obj = analyzer(model, df, "10 yr")
-analyzer_obj.set_data_groups(0.1)
-hist = open_json("hist_10YR_best")
-analyzer_obj.plot_history(hist)
-analyzer_obj.plot_prediction(analyzer_obj.test_pred, analyzer_obj.test_labels, analyzer_obj.test_dates)
-analyzer_obj.calc_direc_succes_rate(analyzer_obj.test_pred, analyzer_obj.test_labels)
-analyzer_obj.calc_rsquared(analyzer_obj.test_pred, analyzer_obj.test_labels)
-analyzer_obj.calc_rsquared_adjusted(analyzer_obj.test_pred, analyzer_obj.test_labels)
