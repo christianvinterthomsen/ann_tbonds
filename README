@@ -1,5 +1,5 @@
 This project aims to predict future yields of bonds using artificial neural networks.
-The project is part of my finals project for my HXX(The Higher Commercial Examination Programme)   
+The project is part of my finals project for my HHX(The Higher Commercial Examination Programme)   
 
 The input data is based on a series of macroeconomic indicators. 
 The data is split between CSV files and webscrabed links.
